@@ -1,0 +1,70 @@
+﻿.table-prop{
+    font-size:11px;
+
+}
+.invisibleColumn{
+    display:none;
+
+}
+label{
+    font-weight:bold;   
+}
+.specTable{
+    width:1200px;
+    border: 1px solid lightgray;
+    border-collapse:collapse;
+
+}
+
+specTable, td {
+    width: 1200px;
+    border-bottom: 1px solid Lightgray;
+    padding-bottom: 6px 6px 6px 6px;
+    padding-bottom:6px;
+}
+
+.divUpdate, .divCreate, input[type=text] {
+    font-size: 11px;
+}
+
+.notifierHidden{
+    width: 200px;
+    padding:10px;
+    background-color:antiquewhite;
+    border: 1px solid green;
+    visibility:hidden;
+
+    margin:auto;
+}
+
+.notifierVisible {
+    visibility:visible
+}
+
+#punk{
+    font-size:12px;
+    color:purple;
+    font-weight:bold;
+}
+
+.editLink{
+    float:left;
+}
+
+.warningText{
+    border:solid 1px red;
+    color:red;
+    width:35%;
+}
+
+.divHighLight {
+    font-style: italic;
+    font-size: small;
+    color: brown;
+}
+
+.headerText {
+    font-size: 10px;
+    color: yellow;
+    background-color:gray;
+}
