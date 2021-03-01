@@ -5,18 +5,32 @@ import axios from 'axios';
 
 import '../css/Main.css';
 
+let mydata = [];
+let data = [];
+let firstPage = 0;
+let rowsPerPage = 5;
+let totalCount = 0;
+let pageSequence = "1 of 22";
+
 export class FetchSuppliers extends Component {
     static displayName = FetchSuppliers.name;
 
     constructor(props) {
         super(props);
-        this.state = { suppliers: [], loading: true };
+        this.state = {
+            suppliers: [],
+            loading: true
+        };
+        this.pagerClick = this.pagerClick.bind(this);
+        
     }
     
     componentDidMount() {
+        firstPage = 0;
         this.populateSuppliers();
+        this.setPageCount();
     }
-
+    
     static renderSuppliersTable(suppliers) {
         return (
 
@@ -43,16 +57,16 @@ export class FetchSuppliers extends Component {
                 <tbody>
                     {suppliers.map(suppliers =>
                         <tr key={suppliers.supplierID}>
-                            <td className="invisibleColumn">{suppliers.supplierID}</td>
-                            <td>{suppliers.companyName}</td>
-                            <td>{suppliers.contactName}</td>
-                            <td>{suppliers.contactTitle}</td>
-                            <td>{suppliers.address}</td>
-                            <td>{suppliers.city}</td>
+                            <td className="invisibleColumn fictious">{suppliers.supplierID}</td>
+                            <td className="fictious">{suppliers.companyName}</td>
+                            <td className="fictious">{suppliers.contactName}</td>
+                            <td className="fictious">{suppliers.contactTitle}</td>
+                            <td className="fictious">{suppliers.address}</td>
+                            <td className="fictious">{suppliers.city}</td>
 
-                            <td>{suppliers.country}</td>
+                            <td className="fictious">{suppliers.country}</td>
                            
-                            <td>
+                            <td className="fictious">
                                 <NavLink className="editLink" tag={Link} to={'/UpdateSupplier/' + suppliers.supplierID}>Edit</NavLink>
                                 <NavLink tag={Link} to={'/DeleteSupplier/' + suppliers.supplierID}>Delete</NavLink>
                             </td>
@@ -60,45 +74,148 @@ export class FetchSuppliers extends Component {
                         </tr>
                     )}
                 </tbody>
-            </table>
+                </table>
+
+         
             </div>
         );
     }
 
-    funky(id) {
+    pagerClick(val) {
+
+        
+        var oldFirstPage = firstPage;
+        var limitReached = false;
+        //document.querySelector("#mySpan").textContent = " you clicked button no: " + val;
+        var wrk;
+        switch (val){
+            case 1:
+                if (firstPage === 0)
+                    return;
+                firstPage = 0;
+                break;
+            case 2:
+                if (firstPage !== 0) {
+                    if (firstPage >= rowsPerPage) {
+                        wrk = firstPage - rowsPerPage;
+                        firstPage = wrk;
+                    }
+                }
+                else
+                    limitReached = true;
+                break;
+            case 3:
+                
+                if (firstPage <= totalCount - rowsPerPage) {
+                    wrk = firstPage + rowsPerPage;
+                    firstPage = wrk;
+                }
+                else
+                    limitReached = true;
+                break;
+            case 4:
+                if (firstPage <= totalCount - rowsPerPage) {
+                    wrk = Math.floor(totalCount / rowsPerPage) * rowsPerPage;
+                    firstPage = wrk;
+                }
+                else
+                    limitReached = true;
+                break;
+            default:
+        }
+
+        if (limitReached) {
+            limitReached = false;
+            return;
+        }
+            
+
+        var x = document.querySelectorAll(".fictious");
+        for (var i = 0; i < x.length; i++)
+            x[i].textContent = "";
+
+                   
+
+        for (var n = firstPage; n < firstPage + rowsPerPage; n++) {
+            if (totalCount === n)
+                break;
+            var a = data[n];
+            mydata[n - firstPage] = data[n];
+        }
+        this.setPageCount();
+        this.setState({ suppliers: mydata, loading: false }, () => this.doMessage());
+       
+        
+    }
+
+    setPageCount() {
+        var num1 = Math.floor(firstPage / rowsPerPage) + 1;
+        var num2 = Math.floor(totalCount / rowsPerPage) + 1;
+        pageSequence = "Page "+ num1+ " of " + num2;
 
     }
 
+    
 
     render() {
-        let contents = this.state.loading
+
+         let contents = this.state.loading
             ? <div><p> <em>Loading...</em></p><p id="messenger">Hello...</p></div>
             
             : FetchSuppliers.renderSuppliersTable(this.state.suppliers);
          return (
-            <div>
-                <h1 id="tabelLabel" >Suppliers</h1>
-
+             <div>
+                 
+                 <h1 id="tabelLabel" >Suppliers</h1>
+                 <span>{firstPage}</span>
                 <p>DATA:</p>
-                {contents}
-            </div>
+                 {contents}
+                 
+                 <div className="gridPagerLayout">
+                     <table style={{ width: "100%" }}>
+                         <tr>
+                             <td className="gridPagerToolButton" onClick={() => this.pagerClick(1)}>&lt;&lt;</td>
+                             <td className="gridPagerToolButton" onClick={() => this.pagerClick(2)}>&lt;</td>
+                             <td className="gridPagerToolButton1" >{pageSequence}</td>
+                             <td className="gridPagerToolButton" onClick={() => this.pagerClick(3)}>&gt;</td>
+                             <td className="gridPagerToolButton" onClick={() => this.pagerClick(4)}>&gt;&gt;</td>
+                         </tr>
+                     </table>
+                 </div>
+                 <span id="mySpan"></span>
+             </div>
+             
         );
     }
 
     doMessage() {
-        document.querySelector("#secondMess").textContent = "populateSupplier done";
+        FetchSuppliers.renderSuppliersTable(this.state.suppliers);
     }
 
     async populateSuppliers() {
-        document.querySelector("#messenger").textContent = "populating Suppliers....";
+        var step = 0;
+        mydata = new Array(rowsPerPage);
+        document.querySelector("#messenger").textContent = "populateSupplier";
         try {
             const resp = await axios.get('API/Suppliers');
-            const data = resp.data;
-            this.setState({ suppliers: data, loading: false }, () => this.doMessage());
+            data = resp.data;
+            totalCount = data.length;
+            step = 1;
+            var first = firstPage;
+            this.setPageCount();
+            step = 2;
+            for (var n = first; n < rowsPerPage; n++) {
+                var a = data[n];
+                mydata[n-first] = data[n];
+            }
+            step = 3;
+
+
+            this.setState({ suppliers: mydata, loading: false }, () => this.doMessage());
             
         }
         catch (err) {
-            document.querySelector("#messenger").textContent = err.message;
+            document.querySelector("#messenger").textContent = err.message + " " + step.toString();
         }
         
     }

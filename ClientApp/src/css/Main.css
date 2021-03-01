@@ -68,3 +68,27 @@ specTable, td {
     color: yellow;
     background-color:gray;
 }
+
+.gridPagerLayout {
+    border: 1px solid grey;
+    width: 30%
+}
+
+.gridPagerToolButton {
+    width: 15%;
+    color: blue;
+    text-align: center;
+    cursor: pointer;
+}
+
+.gridPagerToolButton1 {
+    width: 40%;
+    color: black;
+    text-align: center;
+}
+
+.gridPagerToolButton:hover {
+    color: brown;
+    background-color: beige;
+    border: 1px solid gray;
+}
