@@ -3,7 +3,9 @@ import { NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import '../css/Main.css';
 
-
+const myDivStyle = {
+    display: "none"
+}
 let data = [];
 export class Patients extends Component {
     static displayName = Patients.name;
@@ -57,9 +59,15 @@ export class Patients extends Component {
     }
 
     addAPatient() {
-        alert ('This is not ready yet, please wait a little while...')
+        //alert ('This is not ready yet, please wait a little while...')
+        document.querySelector(".DivPostFrame").style.setProperty("display", "block");
     }
-  
+
+    cancelRequest() {
+        document.querySelector(".DivPostFrame").style.setProperty("display", "none");
+    }
+    
+
     render() {
         
         let contents = this.state.loading
@@ -72,6 +80,48 @@ export class Patients extends Component {
                 <span id="mySpan"></span>
                 <br/>   
                 <input type="button" value="Add patient" onClick={this.addAPatient} />
+                <div className="DivPostFrame" style={myDivStyle}>
+                    <br /><br />
+                    <table>
+                    <tr>
+                            <td>First name:</td>
+                            <td><input type='text'/></td>
+                    </tr>
+                    <tr>
+                        <td>Last name:</td>
+                        <td><input type='text' /></td>
+                    </tr>
+                    <tr>
+                        <td>Year of birth:</td>
+                        <td><input type='number' /></td>
+                    </tr>
+                    <tr>
+                        <td>Hospitalized on date:</td>
+                        <td><input type='date' /></td>
+                    </tr>
+                    <tr>
+                        <td>Registered date:</td>
+                        <td><input type='date' /></td>
+                    </tr>
+                    <tr>
+                        <td>PCR:</td>
+                        <td><input type='checkbox' /></td>
+                    </tr>
+                    <tr>
+                        <td>Last test date:</td>
+                        <td><input type='date' /></td>
+                    </tr>
+                    <tr>
+                        <td>Covid 19 vaccinated:</td>
+                        <td><input type='checkbox' /></td>
+                    </tr>
+                    </table>
+                    <br/>
+                    <input type="button" value="Send" />
+                    &nbsp;
+                    <input type="button" value="Cancel" onClick={this.cancelRequest} />
+                        
+                </div>
             </div>
         );
     }   

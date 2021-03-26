@@ -91,4 +91,19 @@ specTable, td {
     color: brown;
     background-color: beige;
     border: 1px solid gray;
+ }
+
+.DivPostFrame {
+    z-index:100;
+    border: 1px solid black;
+    border-radius: 10px;
+    position:absolute;
+    left:700px;
+    top:170px;
+    width: 450px;
+    height: 410px;
+    background-color:cornsilk;
+    padding-left:20px;
+
+
 }
