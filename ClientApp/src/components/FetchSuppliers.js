@@ -154,8 +154,7 @@ export class FetchSuppliers extends Component {
         pageSequence = "Page "+ num1+ " of " + num2;
 
     }
-
-    
+   
 
     render() {
 
@@ -209,10 +208,8 @@ export class FetchSuppliers extends Component {
                 mydata[n-first] = data[n];
             }
             step = 3;
-
-
             this.setState({ suppliers: mydata, loading: false }, () => this.doMessage());
-            
+           
         }
         catch (err) {
             document.querySelector("#messenger").textContent = err.message + " " + step.toString();

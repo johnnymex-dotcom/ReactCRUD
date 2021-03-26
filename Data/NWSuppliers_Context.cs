@@ -17,5 +17,8 @@ namespace ReactCRUD.Data
                
 
         public DbSet<ReactCRUD.Models.Suppliers> Suppliers{ get; set; }
+        public DbSet<ReactCRUD.Models.PatientRecord> PatientRecord { get; set; }
+        public DbSet<ReactCRUD.Models.Covid19Record> Covid19Record { get; set; }
     }
+    
 }   
