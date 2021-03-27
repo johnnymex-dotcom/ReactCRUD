@@ -141,7 +141,7 @@ namespace ReactCRUD.Controllers
                                   d = d
                               }
                         )
-                        .OrderBy(temp1 => temp1.temp0.e.PatienRecordId)
+                            .OrderBy(temp1 => temp1.temp0.e.PatienRecordId)
                         .Select(
                            temp1 =>
                               new PatientCovid()
@@ -159,6 +159,13 @@ namespace ReactCRUD.Controllers
                               }
                         ).ToListAsync();
             return data;
+        }
+
+        [HttpPost("AddPatient", Name = "AddPatient")]
+        public void AddPatient([FromBody] PatientCovid patient)
+        {
+            var fname = patient.FirstName;
+            var lname = patient.LastName;
         }
 
         private bool SuppliersExists(int id)

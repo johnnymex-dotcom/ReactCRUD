@@ -26,7 +26,7 @@ export class Patients extends Component {
 
     static showPatients(patients) {
         return (
-            <table lassName='table' style={{ fontSize: 12 }}>
+            <table className='table' style={{ fontSize: 12 }}>
                 <thead>
                     <tr>
                         <th>First name</th>
@@ -66,6 +66,20 @@ export class Patients extends Component {
     cancelRequest() {
         document.querySelector(".DivPostFrame").style.setProperty("display", "none");
     }
+
+    sendRequest() {
+        let transData = "FirstName:" + document.querySelector("#firstName").value +
+                        "LastName:" + document.querySelector("#lastName").value +
+            "";
+        fetch("api/Suppliers/AddPatient",
+        {
+            method: "POST",
+            body: JSON.stringify({ transData }),
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        document.querySelector(".DivPostFrame").style.setProperty("display", "none");
+    }
     
 
     render() {
@@ -78,18 +92,18 @@ export class Patients extends Component {
                 <h1 id="tabelLabel" >Patients</h1>
                 {contents}
                 <span id="mySpan"></span>
-                <br/>   
+                <br />
                 <input type="button" value="Add patient" onClick={this.addAPatient} />
                 <div className="DivPostFrame" style={myDivStyle}>
                     <br /><br />
                     <table>
                     <tr>
                             <td>First name:</td>
-                            <td><input type='text'/></td>
+                            <td><input id="firstName" type='text'/></td>
                     </tr>
                     <tr>
                         <td>Last name:</td>
-                        <td><input type='text' /></td>
+                            <td><input id="lastName" type='text'  /></td>
                     </tr>
                     <tr>
                         <td>Year of birth:</td>
@@ -117,7 +131,7 @@ export class Patients extends Component {
                     </tr>
                     </table>
                     <br/>
-                    <input type="button" value="Send" />
+                    <input type="button" value="Send" onClick={this.sendRequest} />
                     &nbsp;
                     <input type="button" value="Cancel" onClick={this.cancelRequest} />
                         
