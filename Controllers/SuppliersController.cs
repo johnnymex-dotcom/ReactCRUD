@@ -162,10 +162,44 @@ namespace ReactCRUD.Controllers
         }
 
         [HttpPost("AddPatient", Name = "AddPatient")]
-        public void AddPatient([FromBody] PatientCovid patient)
+        public bool AddPatient([FromBody] PatientCovid patient)
         {
-            var fname = patient.FirstName;
-            var lname = patient.LastName;
+            PatientRecord pr = new PatientRecord()
+            {
+                FirstName = patient.FirstName,
+                LastName = patient.LastName,
+                YearOfBirth = patient.YearOfBirth,
+                CaseNo = "zx23450",
+                DateOfHospitalization = patient.DateOfHospitalization,
+
+            };
+            _context.PatientRecord.Add(pr);
+            _context.SaveChanges();
+
+            if ( 
+                (patient.LastTestDate == null) || (patient.LastTestDate == System.Convert.ToDateTime("01-01-0001") 
+                && 
+                (patient.RegistrationDate == null) || (patient.RegistrationDate == System.Convert.ToDateTime("01-01-0001"))
+                &&  patient.Covid19Vaccinated !="true" && patient.PCR != "true")
+                )
+            return true;
+
+            var pid = _context.PatientRecord
+                .OrderByDescending(x => x.PatienRecordId).First().PatienRecordId;
+
+            Covid19Record cr19 = new Covid19Record()
+            {
+               PatRecordId = pid,
+               LastTestDate = (DateTime)patient.LastTestDate,
+               RegistrationDate = (DateTime)patient.RegistrationDate,
+               PCR = patient.PCR == "true" ? true:false,
+               Covid19Vaccinated = patient.Covid19Vaccinated == "true" ? true : false
+            };
+            _context.Covid19Record.Add(cr19);
+            _context.SaveChanges();
+
+            return true;
+
         }
 
         private bool SuppliersExists(int id)

@@ -3,6 +3,9 @@ import { NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import '../css/Main.css';
 
+import { Route } from 'react-router';
+
+
 const myDivStyle = {
     display: "none"
 }
@@ -18,7 +21,11 @@ export class Patients extends Component {
         };
 
         this.addAPatient = this.addAPatient.bind(this);
+        this.checkAndSend = this.checkAndSend.bind(this);
     }
+
+   
+    
 
     componentDidMount() {
         this.populatePatients();
@@ -59,79 +66,139 @@ export class Patients extends Component {
     }
 
     addAPatient() {
-        //alert ('This is not ready yet, please wait a little while...')
+
+        document.querySelector("#firstName").value = "";
+        document.querySelector("#lastName").value = "";
+        document.querySelector("#yearOfBirth").value = "";
+        document.querySelector("#dateOfHospitalization").value = "";
+
         document.querySelector(".DivPostFrame").style.setProperty("display", "block");
+        document.querySelector("#btnAddPatient").disabled = true;
+        
     }
 
     cancelRequest() {
         document.querySelector(".DivPostFrame").style.setProperty("display", "none");
+        document.querySelector("#btnAddPatient").disabled = false;
     }
 
     sendRequest() {
-        let transData = "FirstName:" + document.querySelector("#firstName").value +
-                        "LastName:" + document.querySelector("#lastName").value +
-            "";
-        fetch("api/Suppliers/AddPatient",
-        {
-            method: "POST",
-            body: JSON.stringify({ transData }),
-            headers: { 'Content-Type': 'application/json' },
-        });
+        var res;
+        if (document.querySelector("#registrationDate").textContent === "")
+            document.querySelector("#registrationDate").textContent = "0001-01-01";
+        if (document.querySelector("#lastTestDate").textContent === "")
+            document.querySelector("#lastTestDate").textContent = "0001-01-01";
 
-        document.querySelector(".DivPostFrame").style.setProperty("display", "none");
-    }
+        let transData =
+            JSON.stringify({
+                FirstName: document.querySelector("#firstName").value,
+                LastName: document.querySelector("#lastName").value,
+                yearOfBirth: document.querySelector("#yearOfBirth").value,
+                dateOfHospitalization: document.querySelector("#dateOfHospitalization").value,
+                registrationDate: document.querySelector("#registrationDate").textContent,
+                pcr: document.querySelector("#pcr").checked ? "true" : "false",
+                lastTestDate: document.querySelector("#lastTestDate").textContent,
+                covid19Vaccinated: document.querySelector("#covid19Vaccinated").checked ? "true" : "false"
+            });
+
+        fetch("api/Suppliers/AddPatient",
+            {
+                method: "POST",
+                body: transData,
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then(response => response.json())
+            .then(data => res = data);
     
 
+        document.querySelector(".DivPostFrame").style.setProperty("display", "none");
+        this.setState({ loading: true });
+        this.populatePatients();
+        document.querySelector("#btnAddPatient").disabled = false;
+        this.showResult("Patient created- OK....");
+    }
+
+    showResult(message) {
+        document.querySelector("#messBox").textContent = message;
+        document.querySelector("#messBox").style.setProperty("display", "block");
+        setTimeout(() => {
+            document.querySelector("#messBox").style.setProperty("display", "none");
+        }, 3000);
+    }
+
+    checkAndSend() {
+        if (
+            document.querySelector("#firstName").value.trim() === "" ||
+            document.querySelector("#lastName").value.trim() === "" ||
+            document.querySelector("#yearOfBirth").value.trim() === "" ||
+            document.querySelector("#dateOfHospitalization").value.trim() === ""
+        ) {
+            alert("Not all the required fields have been filled out !");
+            return;
+        }
+
+        this.sendRequest();
+    }
+
     render() {
-        
+        const divStyle = {
+            display:"none"
+        };
+
         let contents = this.state.loading
             ? <div><p> <em>Loading...</em></p><p id="messenger">Please wait...</p></div>
             : Patients.showPatients(this.state.Patients);
         return (
             <div>
+                <div id="messBox" style={divStyle} className="messageBox"></div>
                 <h1 id="tabelLabel" >Patients</h1>
                 {contents}
                 <span id="mySpan"></span>
                 <br />
-                <input type="button" value="Add patient" onClick={this.addAPatient} />
+                
+                <span id="testSpan"></span>
+                <input type="button" id="btnAddPatient" value="Add patient" onClick={this.addAPatient} />
+               
                 <div className="DivPostFrame" style={myDivStyle}>
+                    
+                    <span className="redStar"> <b>*</b> </span> <b>Must be filled out.</b>
                     <br /><br />
                     <table>
                     <tr>
                             <td>First name:</td>
-                            <td><input id="firstName" type='text'/></td>
+                            <td><input id="firstName" type='text'/><span className="redStar"> *</span></td>
                     </tr>
                     <tr>
                         <td>Last name:</td>
-                            <td><input id="lastName" type='text'  /></td>
+                            <td><input id="lastName" type='text' /><span className="redStar"> *</span></td>
                     </tr>
                     <tr>
                         <td>Year of birth:</td>
-                        <td><input type='number' /></td>
+                            <td><input id="yearOfBirth" type='number' /><span className="redStar"> *</span></td>
                     </tr>
                     <tr>
                         <td>Hospitalized on date:</td>
-                        <td><input type='date' /></td>
+                            <td><input id="dateOfHospitalization" type='date' /><span className="redStar"> *</span></td>
                     </tr>
                     <tr>
                         <td>Registered date:</td>
-                        <td><input type='date' /></td>
+                            <td><input id="registrationDate" type='date' /></td>
                     </tr>
                     <tr>
                         <td>PCR:</td>
-                        <td><input type='checkbox' /></td>
+                        <td><input id="pcr" type='checkbox' /></td>
                     </tr>
                     <tr>
                         <td>Last test date:</td>
-                        <td><input type='date' /></td>
+                            <td><input id="lastTestDate" type='date' /></td>
                     </tr>
                     <tr>
                         <td>Covid 19 vaccinated:</td>
-                        <td><input type='checkbox' /></td>
+                            <td><input id="covid19Vaccinated" type='checkbox' /></td>
                     </tr>
                     </table>
                     <br/>
-                    <input type="button" value="Send" onClick={this.sendRequest} />
+                    <input type="button" value="Send" onClick={this.checkAndSend} />
                     &nbsp;
                     <input type="button" value="Cancel" onClick={this.cancelRequest} />
                         
