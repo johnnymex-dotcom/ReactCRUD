@@ -84,10 +84,10 @@ export class Patients extends Component {
 
     sendRequest() {
         var res;
-        if (document.querySelector("#registrationDate").textContent === "")
-            document.querySelector("#registrationDate").textContent = "0001-01-01";
-        if (document.querySelector("#lastTestDate").textContent === "")
-            document.querySelector("#lastTestDate").textContent = "0001-01-01";
+        if (document.querySelector("#registrationDate").value === "")
+            document.querySelector("#registrationDate").value = "0001-01-01";
+        if (document.querySelector("#lastTestDate").value === "")
+            document.querySelector("#lastTestDate").value= "0001-01-01";
 
         let transData =
             JSON.stringify({
@@ -95,36 +95,38 @@ export class Patients extends Component {
                 LastName: document.querySelector("#lastName").value,
                 yearOfBirth: document.querySelector("#yearOfBirth").value,
                 dateOfHospitalization: document.querySelector("#dateOfHospitalization").value,
-                registrationDate: document.querySelector("#registrationDate").textContent,
+                registrationDate: document.querySelector("#registrationDate").value,
                 pcr: document.querySelector("#pcr").checked ? "true" : "false",
-                lastTestDate: document.querySelector("#lastTestDate").textContent,
+                lastTestDate: document.querySelector("#lastTestDate").value,
                 covid19Vaccinated: document.querySelector("#covid19Vaccinated").checked ? "true" : "false"
             });
 
         fetch("api/Suppliers/AddPatient",
-            {
-                method: "POST",
-                body: transData,
-                headers: { 'Content-Type': 'application/json' },
-            })
-            .then(response => response.json())
-            .then(data => res = data);
+        {
+            method: "POST",
+            body: transData,
+            headers: { 'Content-Type': 'application/json' },
+        });
+   
     
 
         document.querySelector(".DivPostFrame").style.setProperty("display", "none");
-        this.setState({ loading: true });
-        this.populatePatients();
+        
         document.querySelector("#btnAddPatient").disabled = false;
         this.showResult("Patient created- OK....");
+        this.setState({ loading: true, Patients:[] }, () => this.populatePatients());
+        //this.populatePatients();
     }
 
     showResult(message) {
+        //alert(message);
         document.querySelector("#messBox").textContent = message;
         document.querySelector("#messBox").style.setProperty("display", "block");
         setTimeout(() => {
             document.querySelector("#messBox").style.setProperty("display", "none");
         }, 3000);
     }
+
 
     checkAndSend() {
         if (
@@ -136,6 +138,13 @@ export class Patients extends Component {
             alert("Not all the required fields have been filled out !");
             return;
         }
+        var yct = parseInt(document.querySelector("#yearOfBirth").value.trim());
+        if (yct < 1930 || yct > 2021) {
+            alert("Year of birth should be between 1930 and 2021 !");
+            return;
+
+        }
+
 
         this.sendRequest();
     }

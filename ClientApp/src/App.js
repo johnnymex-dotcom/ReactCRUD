@@ -17,7 +17,6 @@ export default class App extends Component {
   render () {
     return (
       <Layout>
-           
         <Route path='/FetchSuppliers' component={FetchSuppliers} />
         <Route path='/UpdateSupplier/:SupplierID' component={UpdateSupplier} />
         <Route path='/CreateSupplier' component={CreateSupplier} />

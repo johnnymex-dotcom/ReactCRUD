@@ -173,6 +173,7 @@ namespace ReactCRUD.Controllers
                 DateOfHospitalization = patient.DateOfHospitalization,
 
             };
+            
             _context.PatientRecord.Add(pr);
             _context.SaveChanges();
 
@@ -187,19 +188,18 @@ namespace ReactCRUD.Controllers
             var pid = _context.PatientRecord
                 .OrderByDescending(x => x.PatienRecordId).First().PatienRecordId;
 
-            Covid19Record cr19 = new Covid19Record()
-            {
-               PatRecordId = pid,
-               LastTestDate = (DateTime)patient.LastTestDate,
-               RegistrationDate = (DateTime)patient.RegistrationDate,
-               PCR = patient.PCR == "true" ? true:false,
-               Covid19Vaccinated = patient.Covid19Vaccinated == "true" ? true : false
-            };
+            Covid19Record cr19 = new Covid19Record();
+            cr19.PatRecordId = pid;
+            if (patient.LastTestDate != System.Convert.ToDateTime("01-01-0001"))
+                cr19.LastTestDate = (DateTime)patient.LastTestDate;
+            if (patient.RegistrationDate != System.Convert.ToDateTime("01-01-0001"))
+                cr19.RegistrationDate = (DateTime)patient.RegistrationDate;
+            cr19.PCR = patient.PCR == "true" ? true : false;
+            cr19.Covid19Vaccinated = patient.Covid19Vaccinated == "true" ? true : false;
+
             _context.Covid19Record.Add(cr19);
             _context.SaveChanges();
-
             return true;
-
         }
 
         private bool SuppliersExists(int id)
