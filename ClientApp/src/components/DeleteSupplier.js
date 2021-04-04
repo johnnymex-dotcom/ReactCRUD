@@ -23,7 +23,7 @@ export class DeleteSupplier extends Component {
     }
 
     doTask() {
-        var dummy = this.state.id;
+        /*var dummy = this.state.id;*/
     }
 
    async deleteSupplier() {

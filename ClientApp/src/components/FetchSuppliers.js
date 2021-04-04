@@ -82,9 +82,7 @@ export class FetchSuppliers extends Component {
     }
 
     pagerClick(val) {
-
-        
-        var oldFirstPage = firstPage;
+        //var oldFirstPage = firstPage;
         var limitReached = false;
         //document.querySelector("#mySpan").textContent = " you clicked button no: " + val;
         var wrk;
@@ -139,7 +137,7 @@ export class FetchSuppliers extends Component {
         for (var n = firstPage; n < firstPage + rowsPerPage; n++) {
             if (totalCount === n)
                 break;
-            var a = data[n];
+            //var a = data[n];
             mydata[n - firstPage] = data[n];
         }
         this.setPageCount();
@@ -204,7 +202,7 @@ export class FetchSuppliers extends Component {
             this.setPageCount();
             step = 2;
             for (var n = first; n < rowsPerPage; n++) {
-                var a = data[n];
+                //var a = data[n];
                 mydata[n-first] = data[n];
             }
             step = 3;

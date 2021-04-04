@@ -162,7 +162,7 @@ namespace ReactCRUD.Controllers
         }
 
         [HttpPost("AddPatient", Name = "AddPatient")]
-        public bool AddPatient([FromBody] PatientCovid patient)
+        public int AddPatient([FromBody] PatientCovid patient)
         {
             PatientRecord pr = new PatientRecord()
             {
@@ -183,7 +183,7 @@ namespace ReactCRUD.Controllers
                 (patient.RegistrationDate == null) || (patient.RegistrationDate == System.Convert.ToDateTime("01-01-0001"))
                 &&  patient.Covid19Vaccinated !="true" && patient.PCR != "true")
                 )
-            return true;
+            return 1;
 
             var pid = _context.PatientRecord
                 .OrderByDescending(x => x.PatienRecordId).First().PatienRecordId;
@@ -199,7 +199,7 @@ namespace ReactCRUD.Controllers
 
             _context.Covid19Record.Add(cr19);
             _context.SaveChanges();
-            return true;
+            return 2;
         }
 
         private bool SuppliersExists(int id)

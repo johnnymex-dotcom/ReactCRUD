@@ -48,7 +48,7 @@ export class CreateSupplier extends Component {
           await  axios.post('API/Suppliers', myData, { headers })
                 .then((data) => {
                     if (data.status === 201) {
-                        var t = "Saved , OK";
+                        //var t = "Saved , OK";
                         this.ShowMessage("Created successfully....")
                     }
                 })

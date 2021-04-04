@@ -1,9 +1,8 @@
 ﻿import React, { Component } from 'react';
-import { NavLink } from 'reactstrap';
-import { Link } from 'react-router-dom';
+
 import '../css/Main.css';
 
-import { Route } from 'react-router';
+
 
 
 const myDivStyle = {
@@ -82,8 +81,8 @@ export class Patients extends Component {
         document.querySelector("#btnAddPatient").disabled = false;
     }
 
-    sendRequest() {
-        var res;
+    async sendRequest() {
+       
         if (document.querySelector("#registrationDate").value === "")
             document.querySelector("#registrationDate").value = "0001-01-01";
         if (document.querySelector("#lastTestDate").value === "")
@@ -101,13 +100,15 @@ export class Patients extends Component {
                 covid19Vaccinated: document.querySelector("#covid19Vaccinated").checked ? "true" : "false"
             });
 
-        fetch("api/Suppliers/AddPatient",
-        {
-            method: "POST",
-            body: transData,
-            headers: { 'Content-Type': 'application/json' },
-        });
-   
+       const resp = 
+       await fetch("api/Suppliers/AddPatient",
+             {
+                method: "POST",
+                body: transData,
+                headers: { 'Content-Type': 'application/json' },
+             });
+        let mydata = await resp.json();
+        document.querySelector("#mySpan").textContent="Return data is " + mydata;
     
 
         document.querySelector(".DivPostFrame").style.setProperty("display", "none");
@@ -173,38 +174,40 @@ export class Patients extends Component {
                     <span className="redStar"> <b>*</b> </span> <b>Must be filled out.</b>
                     <br /><br />
                     <table>
-                    <tr>
-                            <td>First name:</td>
-                            <td><input id="firstName" type='text'/><span className="redStar"> *</span></td>
-                    </tr>
-                    <tr>
-                        <td>Last name:</td>
-                            <td><input id="lastName" type='text' /><span className="redStar"> *</span></td>
-                    </tr>
-                    <tr>
-                        <td>Year of birth:</td>
-                            <td><input id="yearOfBirth" type='number' /><span className="redStar"> *</span></td>
-                    </tr>
-                    <tr>
-                        <td>Hospitalized on date:</td>
-                            <td><input id="dateOfHospitalization" type='date' /><span className="redStar"> *</span></td>
-                    </tr>
-                    <tr>
-                        <td>Registered date:</td>
-                            <td><input id="registrationDate" type='date' /></td>
-                    </tr>
-                    <tr>
-                        <td>PCR:</td>
-                        <td><input id="pcr" type='checkbox' /></td>
-                    </tr>
-                    <tr>
-                        <td>Last test date:</td>
-                            <td><input id="lastTestDate" type='date' /></td>
-                    </tr>
-                    <tr>
-                        <td>Covid 19 vaccinated:</td>
-                            <td><input id="covid19Vaccinated" type='checkbox' /></td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                                <td>First name:</td>
+                                <td><input id="firstName" type='text'/><span className="redStar"> *</span></td>
+                        </tr>
+                        <tr>
+                            <td>Last name:</td>
+                                <td><input id="lastName" type='text' /><span className="redStar"> *</span></td>
+                        </tr>
+                        <tr>
+                            <td>Year of birth:</td>
+                                <td><input id="yearOfBirth" type='number' /><span className="redStar"> *</span></td>
+                        </tr>
+                        <tr>
+                            <td>Hospitalized on date:</td>
+                                <td><input id="dateOfHospitalization" type='date' /><span className="redStar"> *</span></td>
+                        </tr>
+                        <tr>
+                            <td>Registered date:</td>
+                                <td><input id="registrationDate" type='date' /></td>
+                        </tr>
+                        <tr>
+                            <td>PCR:</td>
+                            <td><input id="pcr" type='checkbox' /></td>
+                        </tr>
+                        <tr>
+                            <td>Last test date:</td>
+                                <td><input id="lastTestDate" type='date' /></td>
+                        </tr>
+                        <tr>
+                            <td>Covid 19 vaccinated:</td>
+                                <td><input id="covid19Vaccinated" type='checkbox' /></td>
+                                </tr>
+                    </tbody>
                     </table>
                     <br/>
                     <input type="button" value="Send" onClick={this.checkAndSend} />
