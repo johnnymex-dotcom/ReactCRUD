@@ -31,7 +31,7 @@ namespace ReactCRUD
                 configuration.RootPath = "ClientApp/build";
             });
             services.AddDbContext<NWSuppliers_Context>
-                (options => options.UseSqlServer(Configuration.GetConnectionString("mexoft_dk_db_test")));
+                (options => options.UseSqlServer(Configuration.GetConnectionString("Northwind")));
             
         }
 

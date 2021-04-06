@@ -21,6 +21,7 @@ export class Patients extends Component {
 
         this.addAPatient = this.addAPatient.bind(this);
         this.checkAndSend = this.checkAndSend.bind(this);
+        
     }
 
    
@@ -35,6 +36,7 @@ export class Patients extends Component {
             <table className='table' style={{ fontSize: 12 }}>
                 <thead>
                     <tr>
+                        <th className="hiddenColoumn"></th>
                         <th>First name</th>
                         <th>Last name</th>
                         <th>Year of birth</th>
@@ -43,25 +45,50 @@ export class Patients extends Component {
                         <th>PCR</th>
                         <th>Last test date</th>
                         <th>Covid19 Vaccinated</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {patients.map(patient =>
                         
                         <tr key={patient.patienRecordId}>
+                            <td className="hiddenColoumn">{patient.patienRecordId}</td>
                             <td>{patient.firstName}</td>
                             <td>{patient.lastName}</td>
                             <td>{patient.yearOfBirth}</td>
-                            <td>{patient.dateOfHospitalization}</td>
-                            <td>{patient.registrationDate}</td>
+                            {/*<td>{patient.dateOfHospitalization}</td>*/}
+                            <td>{this.formatDate(patient.dateOfHospitalization)}</td>
+                            <td>{this.formatDate(patient.registrationDate)}</td>
                             <td>{patient.pcr}</td>
-                            <td>{patient.lastTestDate}</td>
+                            <td>{this.formatDate(patient.lastTestDate)}</td>
                             <td>{patient.covid19Vaccinated}</td>
+                            <td><input type="button" onClick={() => this.notImplementedYet(patient.patienRecordId)}  value="Edit" /></td>
+                            <td><input type="button" onClick={() => this.notImplementedYet(patient.patienRecordId)} value="Delete"/></td>
                         </tr>
                     )}
                 </tbody>
             </table>
         );
+    }
+
+   
+
+    static notImplementedYet(id) {
+
+        alert("Not implemented yet... job todo: finding patient with ID " + id );
+    }
+   
+
+    static formatDate(date) {
+        if (date===null || date.trim() === "")
+            return "";
+        let year = date.substring(0, 4);
+        let month = date.substring(5, 7);
+        let day = date.substring(8, 10);
+        if (year === "0001" && month === "01" && day === "01")
+            return "";
+        return day+"."+month+"."+year;
     }
 
     addAPatient() {
@@ -168,9 +195,10 @@ export class Patients extends Component {
                 
                 <span id="testSpan"></span>
                 <input type="button" id="btnAddPatient" value="Add patient" onClick={this.addAPatient} />
-               
+                <input type="button" onClick={this.notImplementedYet} value="dunk...." />
+
                 <div className="DivPostFrame" style={myDivStyle}>
-                    
+                   
                     <span className="redStar"> <b>*</b> </span> <b>Must be filled out.</b>
                     <br /><br />
                     <table>

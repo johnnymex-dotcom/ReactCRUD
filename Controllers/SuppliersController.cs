@@ -22,7 +22,7 @@ namespace ReactCRUD.Controllers
         }
 
         // GET: api/Suppliers
-        [HttpGet]
+        [HttpGet]   
         public async Task<ActionResult<IEnumerable<Suppliers>>> GetSuppliers()
         {
             var data = await _context.Suppliers.ToListAsync();

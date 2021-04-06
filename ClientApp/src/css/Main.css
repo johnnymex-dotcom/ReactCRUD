@@ -122,3 +122,7 @@ specTable, td {
 .redStar{
     color:red;
 }
+
+.hiddenColoumn{
+    display:none;
+}
