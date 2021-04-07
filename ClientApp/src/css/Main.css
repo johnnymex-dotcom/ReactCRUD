@@ -100,8 +100,8 @@ specTable, td {
     position:absolute;
     left:700px;
     top:170px;
-    width: 450px;
-    height: 410px;
+    width: 470px;
+    height: 430px;
     background-color:cornsilk;
     padding-left:20px;
 
@@ -125,4 +125,12 @@ specTable, td {
 
 .hiddenColoumn{
     display:none;
+}
+
+.patientHeader{
+    border: 2px solid black;
+    background-color: white;
+    height:32px;
+    text-align:center;
+    font-weight:bold;
 }

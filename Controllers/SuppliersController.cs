@@ -31,6 +31,7 @@ namespace ReactCRUD.Controllers
 
 
         // GET: api/Suppliers/5
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<Suppliers>> GetSuppliers(int id)
         {
@@ -110,7 +111,57 @@ namespace ReactCRUD.Controllers
 
         //-----------------------------
 
-        [HttpGet("GetAllPatients", Name = "GetAllPatients")]
+        [Route("GetPatient/{id}")]
+        [HttpGet("GetPatient", Name = "GetPatient")]
+        public async Task<ActionResult<PatientCovid>> GetPatient(int id)
+        {
+            //var pat = await _context.PatientRecord.FindAsync(id);
+
+            var pat = await _context.PatientRecord
+                   .GroupJoin(
+                      _context.Covid19Record,
+                      e => e.PatienRecordId,
+                      d => d.PatRecordId,
+                      (e, ej) =>
+                         new
+                         {
+                             e = e,
+                             ej = ej
+                         }
+                   )
+                   .SelectMany(
+                      temp0 => temp0.ej.DefaultIfEmpty(),
+                      (temp0, d) =>
+                         new
+                         {
+                             temp0 = temp0,
+                             d = d
+                         }
+                   )
+                       .OrderBy(temp1 => temp1.temp0.e.PatienRecordId)
+                   .Select(
+                      temp1 =>
+                         new PatientCovid()
+                         {
+                             PatienRecordId = temp1.temp0.e.PatienRecordId,
+                             CaseNo = temp1.temp0.e.CaseNo,
+                             FirstName = temp1.temp0.e.FirstName,
+                             LastName = temp1.temp0.e.LastName,
+                             YearOfBirth = temp1.temp0.e.YearOfBirth,
+                             DateOfHospitalization = temp1.temp0.e.DateOfHospitalization,
+                             RegistrationDate = temp1.d.RegistrationDate,
+                             PCR = temp1.d.PCR ? "Yes" : "",
+                             LastTestDate = temp1.d.LastTestDate,
+                             Covid19Vaccinated = temp1.d.Covid19Vaccinated ? "Yes" : ""
+                         }
+                   ).Where(x=>x.PatienRecordId==id).FirstOrDefaultAsync();
+           
+            return pat;
+        }
+
+
+
+        [HttpGet("GetAllPatients", Name = "GetAllPatients")]    
         public async Task<ActionResult<IEnumerable<PatientRecord>>> GetAllPatients()
         {
             var data = await _context.PatientRecord.ToListAsync();
@@ -201,6 +252,37 @@ namespace ReactCRUD.Controllers
             _context.SaveChanges();
             return 2;
         }
+
+        [Route("EditPatient/{id}")]
+        [HttpPut("EditPatient", Name = "EditPatient")]
+        public int EditPatient( int Id, [FromBody] PatientCovid patient)
+        {
+            bool newCovidRec = false;
+            var DataToEdit =  _context.PatientRecord.Find(Id);
+            DataToEdit.FirstName = patient.FirstName;
+            DataToEdit.LastName = patient.LastName;
+            DataToEdit.YearOfBirth = patient.YearOfBirth;
+            DataToEdit.DateOfHospitalization = patient.DateOfHospitalization;
+
+            var supplDataToEdit = _context.Covid19Record.Where(c => c.PatRecordId == Id).FirstOrDefault();
+            if (supplDataToEdit == null)
+            {
+                newCovidRec = true;
+                supplDataToEdit = new Covid19Record();
+                supplDataToEdit.PatRecordId = Id;
+            }
+            supplDataToEdit.LastTestDate = (DateTime)patient.LastTestDate ;
+            if (patient.PCR == "Yes") 
+                supplDataToEdit.PCR = true;
+            supplDataToEdit.RegistrationDate = (DateTime)patient.RegistrationDate;
+            if (patient.Covid19Vaccinated == "Yes") 
+                supplDataToEdit.Covid19Vaccinated = true;
+            if (newCovidRec)
+                _context.Covid19Record.Add(supplDataToEdit);
+            _context.SaveChanges();
+            return 0;
+        }
+
 
         private bool SuppliersExists(int id)
         {

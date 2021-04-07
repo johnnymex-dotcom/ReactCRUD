@@ -24,9 +24,6 @@ export class Patients extends Component {
         
     }
 
-   
-    
-
     componentDidMount() {
         this.populatePatients();
     }
@@ -63,7 +60,7 @@ export class Patients extends Component {
                             <td>{patient.pcr}</td>
                             <td>{this.formatDate(patient.lastTestDate)}</td>
                             <td>{patient.covid19Vaccinated}</td>
-                            <td><input type="button" onClick={() => this.notImplementedYet(patient.patienRecordId)}  value="Edit" /></td>
+                            <td><input type="button" onClick={() => this.getPatientWithId(patient.patienRecordId)}  value="Edit" /></td>
                             <td><input type="button" onClick={() => this.notImplementedYet(patient.patienRecordId)} value="Delete"/></td>
                         </tr>
                     )}
@@ -72,13 +69,21 @@ export class Patients extends Component {
         );
     }
 
-   
-
     static notImplementedYet(id) {
 
         alert("Not implemented yet... job todo: finding patient with ID " + id );
     }
-   
+
+    static async getPatientWithId(id) {
+        const resp =
+            await fetch("api/Suppliers/GetPatient/"+id,
+                {
+                    method: "GET",
+                    headers: { 'Content-Type': 'application/json' },
+                });
+        let mydata = await resp.json();
+        this.editPatient(mydata);
+    }
 
     static formatDate(date) {
         if (date===null || date.trim() === "")
@@ -91,12 +96,32 @@ export class Patients extends Component {
         return day+"."+month+"."+year;
     }
 
-    addAPatient() {
+    static editPatient(data) {
 
+        document.querySelector("#patientRecordId").value = data.patienRecordId;
+        document.querySelector(".patientHeader").textContent = "Edit patient";
+        document.querySelector("#firstName").value = data.firstName;
+        document.querySelector("#lastName").value = data.lastName;
+        document.querySelector("#yearOfBirth").value = data.yearOfBirth;
+        document.querySelector("#dateOfHospitalization").value = data.dateOfHospitalization.substring(0, 10);
+        document.querySelector("#pcr").checked = data.pcr==="Yes"? true:false;
+        document.querySelector("#registrationDate").value =
+            data.registrationDate===null? "":data.registrationDate.substring(0, 10);
+        document.querySelector("#covid19Vaccinated").checked = data.covid19Vaccinated === "Yes" ? true : false;
+        document.querySelector("#lastTestDate").value = 
+            data.lastTestDate === null ? "" : data.lastTestDate.substring(0, 10);
+        document.querySelector(".DivPostFrame").style.setProperty("display", "block");
+        document.querySelector("#btnAddPatient").disabled = true;
+
+    }
+
+    addAPatient() {
+        document.querySelector(".patientHeader").textContent = "Add a new patient";
         document.querySelector("#firstName").value = "";
         document.querySelector("#lastName").value = "";
         document.querySelector("#yearOfBirth").value = "";
         document.querySelector("#dateOfHospitalization").value = "";
+
 
         document.querySelector(".DivPostFrame").style.setProperty("display", "block");
         document.querySelector("#btnAddPatient").disabled = true;
@@ -108,7 +133,7 @@ export class Patients extends Component {
         document.querySelector("#btnAddPatient").disabled = false;
     }
 
-    async sendRequest() {
+    async sendRequest(patientRecordId) {
        
         if (document.querySelector("#registrationDate").value === "")
             document.querySelector("#registrationDate").value = "0001-01-01";
@@ -127,14 +152,28 @@ export class Patients extends Component {
                 covid19Vaccinated: document.querySelector("#covid19Vaccinated").checked ? "true" : "false"
             });
 
-       const resp = 
-       await fetch("api/Suppliers/AddPatient",
-             {
-                method: "POST",
-                body: transData,
-                headers: { 'Content-Type': 'application/json' },
-             });
-        let mydata = await resp.json();
+        let resp = "";
+        let mydata = "";
+        if (document.querySelector(".patientHeader").textContent === "Add a new patient") {
+            resp = await fetch("api/Suppliers/AddPatient",
+                {
+                    method: "POST",
+                    body: transData,
+                    headers: { 'Content-Type': 'application/json' },
+                });
+            mydata = await resp.json();
+        }
+        else {
+            resp = await fetch("api/Suppliers/EditPatient/" + patientRecordId,
+                {
+                    method: "PUT",
+                    body: transData,
+                    headers: { 'Content-Type': 'application/json' },
+                });
+            mydata = await resp.json();
+
+        }
+
         document.querySelector("#mySpan").textContent="Return data is " + mydata;
     
 
@@ -143,11 +182,9 @@ export class Patients extends Component {
         document.querySelector("#btnAddPatient").disabled = false;
         this.showResult("Patient created- OK....");
         this.setState({ loading: true, Patients:[] }, () => this.populatePatients());
-        //this.populatePatients();
     }
 
     showResult(message) {
-        //alert(message);
         document.querySelector("#messBox").textContent = message;
         document.querySelector("#messBox").style.setProperty("display", "block");
         setTimeout(() => {
@@ -170,11 +207,8 @@ export class Patients extends Component {
         if (yct < 1930 || yct > 2021) {
             alert("Year of birth should be between 1930 and 2021 !");
             return;
-
         }
-
-
-        this.sendRequest();
+        this.sendRequest(document.querySelector("#patientRecordId").value);
     }
 
     render() {
@@ -195,14 +229,17 @@ export class Patients extends Component {
                 
                 <span id="testSpan"></span>
                 <input type="button" id="btnAddPatient" value="Add patient" onClick={this.addAPatient} />
-                <input type="button" onClick={this.notImplementedYet} value="dunk...." />
-
                 <div className="DivPostFrame" style={myDivStyle}>
-                   
+                    <div className="patientHeader"></div>
                     <span className="redStar"> <b>*</b> </span> <b>Must be filled out.</b>
                     <br /><br />
                     <table>
-                    <tbody>
+                        <tbody>
+                            <tr>
+                                <td colSpan="2">
+                                    <input type="hidden" id="patientRecordId"/>
+                                </td>
+                            </tr>
                         <tr>
                                 <td>First name:</td>
                                 <td><input id="firstName" type='text'/><span className="redStar"> *</span></td>
