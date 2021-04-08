@@ -28,7 +28,7 @@ export class Patients extends Component {
         this.populatePatients();
     }
 
-    static showPatients(patients) {
+    showPatients(patients) {
         return (
             <table className='table' style={{ fontSize: 12 }}>
                 <thead>
@@ -60,8 +60,8 @@ export class Patients extends Component {
                             <td>{patient.pcr}</td>
                             <td>{this.formatDate(patient.lastTestDate)}</td>
                             <td>{patient.covid19Vaccinated}</td>
-                            <td><input type="button" onClick={() => this.getPatientWithId(patient.patienRecordId)}  value="Edit" /></td>
-                            <td><input type="button" onClick={() => this.notImplementedYet(patient.patienRecordId)} value="Delete"/></td>
+                            <td><input type="button" onClick={() => this.getPatientWithId(patient.patienRecordId)} value="Edit" /></td>
+                            <td><input type="button" onClick={() => this.deletePatient(patient.patienRecordId, patient.firstName, patient.lastName)} value="Delete"/></td>
                         </tr>
                     )}
                 </tbody>
@@ -69,12 +69,28 @@ export class Patients extends Component {
         );
     }
 
-    static notImplementedYet(id) {
+    async deletePatient(id,firstName,lastName) {
 
-        alert("Not implemented yet... job todo: finding patient with ID " + id );
+        if (window.confirm("Do you really want to delete patient with name: " + firstName + " " + lastName + " ?")) {
+            const resp =
+                await fetch("api/Suppliers/deletePatient/" + id,
+                    {
+                        method: "GET",
+                        headers: { 'Content-Type': 'application/json' },
+                    });
+            let mydata = await resp.json();
+            if (mydata == 0) {
+                document.querySelector("#messBox").textContent = "Patient deleted  OK....";
+                document.querySelector("#messBox").style.setProperty("display", "block");
+                setTimeout(() => {
+                    document.querySelector("#messBox").style.setProperty("display", "none");
+                }, 3000);
+                this.setState({ loading: true, Patients: [] }, () => this.populatePatients());
+            }
+        }
     }
 
-    static async getPatientWithId(id) {
+    async getPatientWithId(id) {
         const resp =
             await fetch("api/Suppliers/GetPatient/"+id,
                 {
@@ -85,7 +101,7 @@ export class Patients extends Component {
         this.editPatient(mydata);
     }
 
-    static formatDate(date) {
+    formatDate(date) {
         if (date===null || date.trim() === "")
             return "";
         let year = date.substring(0, 4);
@@ -96,7 +112,7 @@ export class Patients extends Component {
         return day+"."+month+"."+year;
     }
 
-    static editPatient(data) {
+    editPatient(data) {
 
         document.querySelector("#patientRecordId").value = data.patienRecordId;
         document.querySelector(".patientHeader").textContent = "Edit patient";
@@ -174,13 +190,17 @@ export class Patients extends Component {
 
         }
 
-        document.querySelector("#mySpan").textContent="Return data is " + mydata;
+        //document.querySelector("#mySpan").textContent="Return data is " + mydata;
     
 
         document.querySelector(".DivPostFrame").style.setProperty("display", "none");
         
         document.querySelector("#btnAddPatient").disabled = false;
-        this.showResult("Patient created- OK....");
+
+        if (document.querySelector(".patientHeader").textContent === "Add a new patient")
+            this.showResult("Patient created- OK....");
+        else
+            this.showResult("Patient edited  OK....");
         this.setState({ loading: true, Patients:[] }, () => this.populatePatients());
     }
 
@@ -218,7 +238,7 @@ export class Patients extends Component {
 
         let contents = this.state.loading
             ? <div><p> <em>Loading...</em></p><p id="messenger">Please wait...</p></div>
-            : Patients.showPatients(this.state.Patients);
+            : this.showPatients(this.state.Patients);
         return (
             <div>
                 <div id="messBox" style={divStyle} className="messageBox"></div>
@@ -231,49 +251,51 @@ export class Patients extends Component {
                 <input type="button" id="btnAddPatient" value="Add patient" onClick={this.addAPatient} />
                 <div className="DivPostFrame" style={myDivStyle}>
                     <div className="patientHeader"></div>
-                    <span className="redStar"> <b>*</b> </span> <b>Must be filled out.</b>
-                    <br /><br />
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td colSpan="2">
-                                    <input type="hidden" id="patientRecordId"/>
-                                </td>
-                            </tr>
-                        <tr>
-                                <td>First name:</td>
-                                <td><input id="firstName" type='text'/><span className="redStar"> *</span></td>
-                        </tr>
-                        <tr>
-                            <td>Last name:</td>
-                                <td><input id="lastName" type='text' /><span className="redStar"> *</span></td>
-                        </tr>
-                        <tr>
-                            <td>Year of birth:</td>
-                                <td><input id="yearOfBirth" type='number' /><span className="redStar"> *</span></td>
-                        </tr>
-                        <tr>
-                            <td>Hospitalized on date:</td>
-                                <td><input id="dateOfHospitalization" type='date' /><span className="redStar"> *</span></td>
-                        </tr>
-                        <tr>
-                            <td>Registered date:</td>
-                                <td><input id="registrationDate" type='date' /></td>
-                        </tr>
-                        <tr>
-                            <td>PCR:</td>
-                            <td><input id="pcr" type='checkbox' /></td>
-                        </tr>
-                        <tr>
-                            <td>Last test date:</td>
-                                <td><input id="lastTestDate" type='date' /></td>
-                        </tr>
-                        <tr>
-                            <td>Covid 19 vaccinated:</td>
-                                <td><input id="covid19Vaccinated" type='checkbox' /></td>
+                    <div className="dialogContent">
+                        <span className="redStar"> <b>*</b> </span> <b>Must be filled out.</b>
+                        <br /><br />
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td colSpan="2">
+                                        <input type="hidden" id="patientRecordId"/>
+                                    </td>
                                 </tr>
-                    </tbody>
-                    </table>
+                            <tr>
+                                    <td>First name:</td>
+                                    <td><input id="firstName" type='text'/><span className="redStar"> *</span></td>
+                            </tr>
+                            <tr>
+                                <td>Last name:</td>
+                                    <td><input id="lastName" type='text' /><span className="redStar"> *</span></td>
+                            </tr>
+                            <tr>
+                                <td>Year of birth:</td>
+                                    <td><input id="yearOfBirth" type='number' /><span className="redStar"> *</span></td>
+                            </tr>
+                            <tr>
+                                <td>Hospitalized on date:</td>
+                                    <td><input id="dateOfHospitalization" type='date' /><span className="redStar"> *</span></td>
+                            </tr>
+                            <tr>
+                                <td>Registered date:</td>
+                                    <td><input id="registrationDate" type='date' /></td>
+                            </tr>
+                            <tr>
+                                <td>PCR:</td>
+                                <td><input id="pcr" type='checkbox' /></td>
+                            </tr>
+                            <tr>
+                                <td>Last test date:</td>
+                                    <td><input id="lastTestDate" type='date' /></td>
+                            </tr>
+                            <tr>
+                                <td>Covid 19 vaccinated:</td>
+                                    <td><input id="covid19Vaccinated" type='checkbox' /></td>
+                                    </tr>
+                        </tbody>
+                            </table>
+                    </div>
                     <br/>
                     <input type="button" value="Send" onClick={this.checkAndSend} />
                     &nbsp;
@@ -285,7 +307,7 @@ export class Patients extends Component {
     }   
 
     doAction() {
-        Patients.showPatients(this.state.Patients);
+        this.showPatients(this.state.Patients);
     }
 
     async populatePatients() {

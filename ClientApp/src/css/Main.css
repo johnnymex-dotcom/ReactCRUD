@@ -103,20 +103,24 @@ specTable, td {
     width: 470px;
     height: 430px;
     background-color:cornsilk;
-    padding-left:20px;
+    
 
 
 }
 
-.messageBox{
-    width:200px;
-    height:50px;
-    border:1px solid brown;
+.dialogContent {
+    padding-left: 20px;
+}
+
+.messageBox {
+    width: 200px;
+    height: 50px;
+    border: 1px solid brown;
     background-color: bisque;
-    z-index:1000;
-    position:absolute;
-    left:400px;
-    top:200px;
+    z-index: 1000;
+    position: absolute;
+    left: 400px;
+    top: 200px;
 }
 
 .redStar{
@@ -127,10 +131,11 @@ specTable, td {
     display:none;
 }
 
-.patientHeader{
+.patientHeader {
+    border-radius: 5px;
     border: 2px solid black;
     background-color: white;
-    height:32px;
-    text-align:center;
-    font-weight:bold;
+    height: 32px;
+    text-align: center;
+    font-weight: bold;
 }

@@ -272,19 +272,31 @@ namespace ReactCRUD.Controllers
                 supplDataToEdit.PatRecordId = Id;
             }
             supplDataToEdit.LastTestDate = (DateTime)patient.LastTestDate ;
-            if (patient.PCR == "Yes") 
+            if (patient.PCR.ToLower() == "true")
                 supplDataToEdit.PCR = true;
+            else
+                supplDataToEdit.PCR = false;
             supplDataToEdit.RegistrationDate = (DateTime)patient.RegistrationDate;
-            if (patient.Covid19Vaccinated == "Yes") 
+            if (patient.Covid19Vaccinated.ToLower() == "true")
                 supplDataToEdit.Covid19Vaccinated = true;
+            else
+                supplDataToEdit.Covid19Vaccinated = false;
             if (newCovidRec)
                 _context.Covid19Record.Add(supplDataToEdit);
             _context.SaveChanges();
             return 0;
         }
 
-
-        private bool SuppliersExists(int id)
+        [Route("deletePatient/{id}")]
+        [HttpPut("deletePatient", Name = "deletePatient")]
+        public int deletePatient(int Id)
+        {
+            var patientToDelete = _context.PatientRecord.Find(Id);
+            _context.PatientRecord.Remove(patientToDelete);
+            _context.SaveChanges();
+            return 0;
+        }
+            private bool SuppliersExists(int id)
         {
             return _context.Suppliers.Any(e => e.SupplierID == id);
         }
