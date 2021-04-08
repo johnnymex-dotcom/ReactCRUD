@@ -293,10 +293,20 @@ namespace ReactCRUD.Controllers
         {
             var patientToDelete = _context.PatientRecord.Find(Id);
             _context.PatientRecord.Remove(patientToDelete);
+            if (_context.Covid19Record.Any(c => c.PatRecordId == Id))
+            {
+                var cr =_context.Covid19Record.Where(c => c.PatRecordId == Id).FirstOrDefault();
+                if (cr != null)
+                {
+                    _context.Covid19Record.Remove(cr);
+                }
+            }
             _context.SaveChanges();
             return 0;
         }
-            private bool SuppliersExists(int id)
+
+
+        private bool SuppliersExists(int id)
         {
             return _context.Suppliers.Any(e => e.SupplierID == id);
         }
