@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
+import { NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
+import '../css/Main.css';
 
 export class NavMenu extends Component {
   static displayName = NavMenu.name;
@@ -21,25 +22,25 @@ export class NavMenu extends Component {
     });
   }
 
+    menuClickEvt(self) {
+        document.querySelector("#m1").className = "menuSection";
+        document.querySelector("#m2").className = "menuSection";
+        document.querySelector("#m" + self).className = "menuSection selectedPost";
+    }
+
   render () {
     return (
       <header>
-        <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light>
-          <Container>
-            <NavbarBrand tag={Link} to="/">ReactCRUD</NavbarBrand>
-            <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
-            <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar>
-              <ul className="navbar-nav flex-grow">
-                <NavItem>
-                    <NavLink tag={Link} className="text-dark" to="/FetchSuppliers">Fetch suppliers</NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/Patients">Patients</NavLink>
-                </NavItem>
-              </ul>
-            </Collapse>
-          </Container>
-        </Navbar>
+            <p className="headerStyle">Pick a function....</p>
+            <p onClick={this.toggleNavbar} >
+                <div className="menuSection" id="m1" onClick={() => this.menuClickEvt(1)}>
+                    <NavLink tag={Link} to="/FetchSuppliers">Fetch suppliers</NavLink>
+                </div>
+                <div className="menuSection" id="m2" onClick={() => this.menuClickEvt(2)}>
+                    <NavLink tag={Link} to="/Patients">Patients</NavLink>
+                </div>
+   
+            </p>
       </header>
     );
   }

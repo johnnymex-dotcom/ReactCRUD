@@ -139,3 +139,29 @@ specTable, td {
     text-align: center;
     font-weight: bold;
 }
+
+
+.menuSection {
+    border: 1px solid gray;
+    width: 160px;
+    height: 36px;
+    padding: 1px 1px 1px 1px;
+    background-color: white;
+}
+
+    .menuSection:hover {
+        background-color:burlywood;
+    }
+
+    .menuSection:visited {
+        background-color: coral;
+    }
+
+.headerStyle {
+    padding-left: 30px;
+    color: brown;
+}
+
+.selectedPost {
+    background-color: gold;
+}
